@@ -14,7 +14,7 @@ api = tweepy.API(auth)
 posted_ids = set()
 
 def fetch_quakes():
-    url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/6.0_hour.geojson"
+    url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_hour.geojson"
     try:
         res = requests.get(url, timeout=10)
         return res.json().get("features", [])
