@@ -47,3 +47,16 @@ while True:
             except Exception as e:
                 print("Tweet error:", e)
     time.sleep(300)
+
+
+import socket
+import threading
+
+# Start a dummy web server to keep Render happy
+def keep_alive():
+    sock = socket.socket()
+    sock.bind(('0.0.0.0', 10000))
+    sock.listen(1)
+    print("Dummy web server running on port 10000")
+
+threading.Thread(target=keep_alive).start()
