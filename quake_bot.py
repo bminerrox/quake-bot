@@ -2,7 +2,19 @@ import requests
 import tweepy
 import time
 import os
+import socket
+import threading
 
+# Dummy server to keep Render Web Service alive
+def keep_alive():
+    sock = socket.socket()
+    sock.bind(('0.0.0.0', 10000))  # Must be 10000+ for Render to detect
+    sock.listen(1)
+    print("Dummy web server running on port 10000")
+
+threading.Thread(target=keep_alive).start()  # Start it early
+
+# Twitter API keys from environment variables
 API_KEY = os.environ['API_KEY']
 API_SECRET = os.environ['API_SECRET']
 ACCESS_TOKEN = os.environ['ACCESS_TOKEN']
@@ -19,7 +31,7 @@ def fetch_quakes():
         res = requests.get(url, timeout=10)
         return res.json().get("features", [])
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error fetching quakes: {e}")
         return []
 
 def create_tweet(quake):
@@ -35,6 +47,7 @@ def create_tweet(quake):
         f"#earthquake #USGS"
     )
 
+# Main loop
 while True:
     for quake in fetch_quakes():
         quake_id = quake["id"]
@@ -46,17 +59,4 @@ while True:
                 posted_ids.add(quake_id)
             except Exception as e:
                 print("Tweet error:", e)
-    time.sleep(300)
-
-
-import socket
-import threading
-
-# Start a dummy web server to keep Render happy
-def keep_alive():
-    sock = socket.socket()
-    sock.bind(('0.0.0.0', 10000))
-    sock.listen(1)
-    print("Dummy web server running on port 10000")
-
-threading.Thread(target=keep_alive).start()
+    time.sleep(300)  # 5 minutes
